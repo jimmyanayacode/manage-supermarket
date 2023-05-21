@@ -1,10 +1,12 @@
 import { addDays } from 'date-fns';
+import { Provider } from 'src/providers/entities/provider.entity';
 import {
   AfterUpdate,
   BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -22,8 +24,10 @@ export class Bill {
   @Column('text')
   number_bill: string;
 
-  @Column('text')
-  provider: string;
+  @OneToOne( () => Provider, ( provider ) => provider.name, {
+    cascade: true,
+  })
+  provider: Provider
 
   @Column('int', {
     default: 0,
