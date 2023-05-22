@@ -1,11 +1,14 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { addDays } from 'date-fns';
 import { Provider } from 'src/providers/entities/provider.entity';
 import {
   AfterUpdate,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -24,11 +27,6 @@ export class Bill {
   @Column('text')
   number_bill: string;
 
-  @OneToOne( () => Provider, ( provider ) => provider.name, {
-    cascade: true,
-  })
-  provider: Provider
-
   @Column('int', {
     default: 0,
   })
@@ -42,21 +40,34 @@ export class Bill {
   })
   pay: number;
 
+  @Column('int', {
+    default: 0,
+  })
+  pending_debt: number;
+
   @Column('boolean', {
     default: true,
   })
   status: boolean;
+
+  @ManyToOne( () => Provider, ( provider ) => provider.name, {
+    cascade: true,
+  })
+  provider: Provider
 
   @BeforeInsert()
   setDate() {
     this.date_programing_pay = addDays(new Date(), 30);
   }
 
-  @AfterUpdate()
-  async handlePayUpdate() {
-    if (this.pay === this.price) {
+  @BeforeUpdate()
+  updateDates() {
+    if (this.pending_debt < this.pay || this.status === false) {
+      throw new HttpException(`The pay can't maior to price`, HttpStatus.BAD_REQUEST)
+    } 
+    this.pending_debt = this.pending_debt - this.pay;   
+    if (this.pending_debt === 0) {
+      this.status = false;
       this.date_done_pay = new Date();
-      this.price = this.price - this.pay;
-    }
-  }
-}
+    }}}
+

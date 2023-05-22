@@ -13,12 +13,11 @@ export class ProvidersService {
   constructor(
     @InjectRepository(Provider)
     private readonly providerRepository: Repository<Provider>
-  ) { }
+  ) {}
 
   async create(createProviderDto: CreateProviderDto) {
     try {
       const provider = this.providerRepository.create(createProviderDto);
-
       await this.providerRepository.save(provider)
       return provider
     } catch (error) {
@@ -29,33 +28,35 @@ export class ProvidersService {
   async findAll(pagionationDto: PaginationDto) {
 
     const { limit = 10, offset = 0 } = pagionationDto
-
-    const providers = await this.providerRepository.find({
-      take: limit,
-      skip: offset,
-    });
-
-    return providers;
+    try {
+      const providers = await this.providerRepository.find({
+        take: limit,
+        skip: offset,
+      });
+      return providers;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   async findOne(term: string) {
     let provider: Provider;
-
-    if (isUUID(term)) {
-      provider = await this.providerRepository.findOneBy({ id: term });
-    } else {
-      const queryBuilder = this.providerRepository.createQueryBuilder('provider');
-      provider = await queryBuilder
-        .where('UPPER(name) =:name', {
-          name: term.toUpperCase()
-        })
-        .getOne();
+    try {
+      if (isUUID(term)) {
+        provider = await this.providerRepository.findOneBy({ id: term });
+      } else {
+        const queryBuilder = this.providerRepository.createQueryBuilder('provider');
+        provider = await queryBuilder
+          .where('UPPER(name) =:name', {
+            name: term.toUpperCase()
+          })
+          .getOne();
+      }
+      this.notFoundProvider(provider)
+      return provider;
+    } catch (error) {
+      this.handleDBExceptions(error);
     }
-
-    this.notFoundProvider(provider)
-
-    return provider;
-
   }
 
   async update(id: string, updateProviderDto: UpdateProviderDto) {
@@ -66,7 +67,6 @@ export class ProvidersService {
       })
 
       this.notFoundProvider(provider);
-      
       await this.providerRepository.save(provider)
       return provider
     } catch (error) {
@@ -75,13 +75,15 @@ export class ProvidersService {
   }
 
   async changeStatusProvider(id: string) {
-
-    let provider:Provider = await this.findOne(id) 
-    this.notFoundProvider(provider)
-    provider.status= !provider.status
-    await this.providerRepository.update( id, provider)
-    return `Provider change status to ${provider.status}`
-
+    try {
+      let provider: Provider = await this.findOne(id)
+      this.notFoundProvider(provider)
+      provider.status = !provider.status
+      await this.providerRepository.update(id, provider)
+      return `Provider change status to ${provider.status}`
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   private handleDBExceptions(error: any) {
@@ -92,7 +94,7 @@ export class ProvidersService {
     );
   }
 
-  private notFoundProvider(provider:Provider){
+  private notFoundProvider(provider: Provider) {
     if (!provider || provider === undefined) throw new NotFoundException(`Provider not found`);
   }
 

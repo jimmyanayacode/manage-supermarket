@@ -22,6 +22,7 @@ export class Provider {
         this.name = this.name.toLowerCase()
     }
 
-    /* @OneToMany( () => Bill, (bill) => bill.provider) bill:Bill; */
+    @OneToMany( () => Bill, (bill) => bill.provider) 
+    bill:Bill[]; 
 
 }
