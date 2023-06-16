@@ -10,6 +10,7 @@ import { isUUID } from 'class-validator';
 @Injectable()
 export class ProvidersService {
 
+  //Inject Repository service to manager operations of typeorm in our entity Provider.
   constructor(
     @InjectRepository(Provider)
     private readonly providerRepository: Repository<Provider>
@@ -97,5 +98,4 @@ export class ProvidersService {
   private notFoundProvider(provider: Provider) {
     if (!provider || provider === undefined) throw new NotFoundException(`Provider not found`);
   }
-
 }

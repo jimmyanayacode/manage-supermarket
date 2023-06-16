@@ -2,14 +2,12 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { addDays } from 'date-fns';
 import { Provider } from 'src/providers/entities/provider.entity';
 import {
-  AfterUpdate,
   BeforeInsert,
   BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 

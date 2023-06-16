@@ -1,4 +1,3 @@
-import { Provider } from "@nestjs/common";
 import { IsInt, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
 
 export class CreateBillDto {

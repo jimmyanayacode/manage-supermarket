@@ -18,6 +18,7 @@ export class ProvidersController {
     return this.providersService.findAll( paginationDto );
   }
 
+  //This controller find by term (id or name)
   @Get(':term')
   findOne(@Param('term') term: string) {
     return this.providersService.findOne(term);

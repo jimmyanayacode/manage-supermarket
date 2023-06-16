@@ -3,7 +3,6 @@ import { BillsService } from './bills.service';
 import { BillsController } from './bills.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Bill } from './entities/bill.entity';
-import { ProvidersModule } from 'src/providers/providers.module';
 import { Provider } from 'src/providers/entities/provider.entity';
 
 @Module({
